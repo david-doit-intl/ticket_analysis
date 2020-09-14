@@ -1,0 +1,43 @@
+# Addon input file
+in.txt
+installed.txt
+config.ini
+build
+dist
+
+# Test files
+!tests/fixtures/config.ini
+!tests/fixtures/in.txt
+!tests/fixtures/installed.txt
+
+# Settings for IntelliJ
+.idea/
+
+# Compiled pyc files
+__pycache__/
+.vscode/
+desktop.ini
+
+# Direnv file
+.envrc
+
+# Type Checker
+.mypy_cache
+
+# Unit test / coverage reports
+htmlcov/
+.tox/
+.nox/
+.coverage
+.coverage.*
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+*,cover
+.hypothesis/
+.pytest_cache/
+
+## output 
+tickets_per_org
+
