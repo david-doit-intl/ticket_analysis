@@ -22,9 +22,10 @@ def get(uri, cookies, page_num):
 def write_json_file(current_api):
   current_api_data = []
   counter = 1
-  current_page = {}
-
-  while counter == 1 or current_page.get('next_page', None) != None:
+  current_page = fetch(current_api, counter)
+  current_api_data.extend(current_page[current_api])
+  
+  while current_page.get('next_page', None) != None:
     counter += 1
     current_page = fetch(current_api, counter)
     current_api_data.extend(current_page[current_api])
@@ -35,7 +36,8 @@ def write_json_file(current_api):
       outfile.write('\n')
 
 def main():
-  apis = ['users', 'groups', 'organizations', 'tickets']
+  #apis = ['users', 'groups', 'organizations', 'tickets']
+  apis = ['groups']
   [write_json_file(api) for api in apis]
 
 if __name__ == "__main__":
