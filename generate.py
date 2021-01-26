@@ -19,19 +19,22 @@ def get(uri, cookies, page_num):
       exit()
   return response.json()
 
-def main():
-  orgs = []
+def write_json_file(current_api):
+  current_api_data = []
   counter = 1
-  current_org_page = org_page()
-  orgs.extend([org for org in current_org_page['organizations']])
 
-  while org_page(counter)['next_page'] != None:
+  while counter == 1 or org_page(counter).get('next_page', None) != None:
     counter += 1
-    current_org_page = org_page(counter)
-    orgs.extend(current_org_page['organizations'])
+    current_page = org_page(counter)
+    print(current_page)
+    current_api_data.extend(current_page['organizations'])
 
-  with open('org.json', 'w') as outfile:
-    json.dump(orgs, outfile)
+  with open(f'{current_api}.json', 'w') as outfile:
+    json.dump(current_api_data, outfile)
+
+def main():
+  apis = ['groups', 'organizations', 'tickets']
+  [write_json_file(api) for api in apis]
 
 if __name__ == "__main__":
     main()
