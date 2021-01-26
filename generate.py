@@ -4,8 +4,8 @@ import json
 
 cookies = dict({cookie.split("=")[0]:cookie.split("=")[1] for cookie in os.environ["COOKIE"].split(";")})
 
-def org_page(page_num=1):
-  return get(f'https://doitintl.zendesk.com/api/v2/organizations.json?page={page_num}', cookies, page_num)
+def fetch(api, page_num=1):
+  return get(f'https://doitintl.zendesk.com/api/v2/{api}.json?page={page_num}', cookies, page_num)
 
 def get(uri, cookies, page_num):
   response = requests.get(uri, cookies=cookies)
@@ -22,15 +22,17 @@ def get(uri, cookies, page_num):
 def write_json_file(current_api):
   current_api_data = []
   counter = 1
+  current_page = {}
 
-  while counter == 1 or org_page(counter).get('next_page', None) != None:
+  while counter == 1 or current_page.get('next_page', None) != None:
     counter += 1
-    current_page = org_page(counter)
-    print(current_page)
-    current_api_data.extend(current_page['organizations'])
+    current_page = fetch(current_api, counter)
+    current_api_data.extend(current_page[current_api])
 
   with open(f'{current_api}.json', 'w') as outfile:
-    json.dump(current_api_data, outfile)
+    for item in current_api_data:
+      json.dump(item, outfile)
+      outfile.write('\n')
 
 def main():
   apis = ['groups', 'organizations', 'tickets']
