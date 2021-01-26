@@ -1,10 +1,3 @@
-# Addon input file
-in.txt
-installed.txt
-config.ini
-build
-dist
-
 # Test files
 !tests/fixtures/config.ini
 !tests/fixtures/in.txt
@@ -39,5 +32,4 @@ coverage.xml
 .pytest_cache/
 
 ## output 
-tickets_per_org
-
+*json
