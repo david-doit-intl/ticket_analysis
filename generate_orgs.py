@@ -14,7 +14,7 @@ def get(uri, cookies, page_num):
       print('Rate limited! Please wait.')
       time.sleep(int(response.headers['retry-after']))
       continue
-   else:
+    else:
       print('Error with status code {}'.format(response.status_code))
       exit()
   return response.json()
