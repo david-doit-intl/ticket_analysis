@@ -36,7 +36,7 @@ def write_json_file(current_api):
       outfile.write('\n')
 
 def main():
-  apis = ['users', 'groups', 'organizations', 'tickets']
+  apis = ['users', 'groups', 'organizations', 'tickets', 'ticket_metrics']
   [write_json_file(api) for api in apis]
 
 if __name__ == "__main__":
