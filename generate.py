@@ -54,6 +54,7 @@ def main():
     print(
       f'Uploaded to gs://{bucket_name}/{blob.name}'
     )
+  return "Files Uploaded Successfully"
 
 
 if __name__ == "__main__":
