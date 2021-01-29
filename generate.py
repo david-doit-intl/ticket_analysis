@@ -6,6 +6,8 @@ import json
 
 from flask import Flask
 
+app = Flask(__name__)
+
 cookies = dict({cookie.split("=")[0]:cookie.split("=")[1] for cookie in os.environ["COOKIE"].split(";")})
 bucket_name = os.environ["BUCKET"]
 
@@ -53,8 +55,6 @@ def main():
       f'Uploaded to gs://{bucket_name}/{blob.name}'
     )
 
-
-app = Flask(__name__)
 
 if __name__ == "__main__":
   app.run(debug=True, host="0.0.0.0", port=int(os.environ.get("PORT", 8080)))
