@@ -14,4 +14,4 @@ RUN pip install -r requirements.txt
 
 COPY generate.py .
 
-ENTRYPOINT ["python", "/app/generate.py"]
+CMD exec gunicorn --bind :$PORT --workers 1 --threads 1 --timeout 0 generate:app
