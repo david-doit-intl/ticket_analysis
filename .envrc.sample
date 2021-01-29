@@ -7,3 +7,4 @@ git config --local user.email <your email>
 git config --local user.name <your username>
 
 export COOKIE=""
+export BUCKET=""
