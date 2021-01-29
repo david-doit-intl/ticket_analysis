@@ -4,6 +4,8 @@ import requests
 import os
 import json
 
+from flask import Flask
+
 cookies = dict({cookie.split("=")[0]:cookie.split("=")[1] for cookie in os.environ["COOKIE"].split(";")})
 bucket_name = os.environ["BUCKET"]
 
@@ -35,6 +37,7 @@ def write_json_file(current_api):
 
   return '\n'.join([json.dumps(item) for item in current_api_data])
 
+@app.route("/")
 def main():
   apis = ['users', 'groups', 'organizations', 'tickets']
   api_data = {api: write_json_file(api) for api in apis}
@@ -50,5 +53,8 @@ def main():
       f'Uploaded to gs://{bucket_name}/{blob.name}'
     )
 
+
+app = Flask(__name__)
+
 if __name__ == "__main__":
-    main()
+  app.run(debug=True, host="0.0.0.0", port=int(os.environ.get("PORT", 8080)))
