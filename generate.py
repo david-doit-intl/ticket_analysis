@@ -1,3 +1,4 @@
+from google.cloud import secretmanager
 from google.cloud import storage
 from datetime import date
 import requests
@@ -8,8 +9,13 @@ from flask import Flask
 
 app = Flask(__name__)
 
-cookies = dict({cookie.split("=")[0]:cookie.split("=")[1] for cookie in os.environ["COOKIE"].split(";")})
-bucket_name = os.environ["BUCKET"]
+client = secretmanager.SecretManagerServiceClient()
+
+
+def get_secret(project_id, secret_id, version_id=1):
+    name = f"projects/{project_id}/secrets/{secret_id}/versions/{version_id}"
+    response = client.access_secret_version(request={"name": name})
+    return response.payload.data.decode("UTF-8")
 
 def fetch(api, page_num=1):
   return get(f'https://doitintl.zendesk.com/api/v2/{api}.json?page={page_num}', cookies, page_num)
@@ -41,7 +47,12 @@ def write_json_file(current_api):
 
 @app.route("/")
 def main():
+  raw_cookie = get_secret('warehouse-302911','ZENDESK_COOKIE')
+  cookies = dict({cookie.split("=")[0]:cookie.split("=")[1] for cookie in raw_cookie.split(";")})
+
+  bucket_name = os.environ["BUCKET"]
   apis = ['users', 'groups', 'organizations', 'tickets']
+
   api_data = {api: write_json_file(api) for api in apis}
 
   storage_client = storage.Client()
