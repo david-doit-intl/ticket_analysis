@@ -12,12 +12,12 @@ app = Flask(__name__)
 client = secretmanager.SecretManagerServiceClient()
 
 
-def get_secret(project_id, secret_id, version_id=1):
+def get_secret(project_id, secret_id, version_id=4):
     name = f"projects/{project_id}/secrets/{secret_id}/versions/{version_id}"
     response = client.access_secret_version(request={"name": name})
     return response.payload.data.decode("UTF-8")
 
-def fetch(api, page_num=1):
+def fetch(api, cookies, page_num=1):
   return get(f'https://doitintl.zendesk.com/api/v2/{api}.json?page={page_num}', cookies, page_num)
 
 def get(uri, cookies, page_num):
@@ -32,28 +32,29 @@ def get(uri, cookies, page_num):
       exit()
   return response.json()
 
-def extract_all(current_api, current_api_data, counter=1): 
-  current_page = fetch(current_api, counter)
+def iterate_through_pages(current_api, cookies, current_api_data, counter=1): 
+  current_page = fetch(current_api, cookies, counter)
   current_api_data.extend(current_page[current_api])
   if current_page.get('next_page', None) != None:
     counter += 1
-    extract_all(current_api, current_api_data, counter)
+    iterate_through_pages(current_api, cookies, current_api_data, counter)
 
-def write_json_file(current_api):
+def get_json_data(current_api, cookies):
   current_api_data = []
-  extract_all(current_api, current_api_data)
+  iterate_through_pages(current_api, cookies, current_api_data)
 
   return '\n'.join([json.dumps(item) for item in current_api_data])
 
 @app.route("/")
 def main():
   raw_cookie = get_secret('warehouse-302911','ZENDESK_COOKIE')
-  cookies = dict({cookie.split("=")[0]:cookie.split("=")[1] for cookie in raw_cookie.split(";")})
+  cookies = dict({cookie.split("=")[0].strip():cookie.split("=")[1].replace("\"","") for cookie in raw_cookie.split(";") if cookie.split("=")[0].find(".") == -1 })
+  print(cookies)
 
   bucket_name = os.environ["BUCKET"]
   apis = ['users', 'groups', 'organizations', 'tickets']
 
-  api_data = {api: write_json_file(api) for api in apis}
+  api_data = {api: get_json_data(api, cookies) for api in apis}
 
   storage_client = storage.Client()
   bucket = storage_client.bucket(bucket_name)
