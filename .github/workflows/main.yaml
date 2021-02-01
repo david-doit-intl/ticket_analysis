@@ -1,0 +1,19 @@
+name: main
+on:
+  push:
+    branches:
+    - master
+    tags:
+    - "*"
+  pull_request:
+jobs:
+  test:
+    name: test
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v1
+      with:
+        fetch-depth: 1
+    - name: Build
+      run: docker build .
