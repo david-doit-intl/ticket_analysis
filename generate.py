@@ -12,10 +12,10 @@ app = Flask(__name__)
 client = secretmanager.SecretManagerServiceClient()
 
 
-def get_secret(project_id, secret_id, version_id=4):
+def get_secret(project_id, secret_id, version_id=7):
     name = f"projects/{project_id}/secrets/{secret_id}/versions/{version_id}"
     response = client.access_secret_version(request={"name": name})
-    return response.payload.data.decode("UTF-8")
+    return str(response.payload.data.decode("UTF-8"))
 
 def fetch(api, cookies, page_num=1):
   return get(f'https://doitintl.zendesk.com/api/v2/{api}.json?page={page_num}', cookies, page_num)
@@ -48,7 +48,10 @@ def get_json_data(current_api, cookies):
 @app.route("/")
 def main():
   raw_cookie = get_secret('warehouse-302911','ZENDESK_COOKIE')
-  cookies = dict({cookie.split("=")[0].strip():cookie.split("=")[1].replace("\"","") for cookie in raw_cookie.split(";") if cookie.split("=")[0].find(".") == -1 })
+  cookies = dict({
+    cookie.split("=")[0].strip():cookie.split("=")[1]
+    for cookie in raw_cookie.split(";")
+  })
 
   bucket_name = os.environ["BUCKET"]
   apis = ['users', 'groups', 'organizations', 'tickets']
