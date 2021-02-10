@@ -49,7 +49,6 @@ def get_json_data(current_api, cookies):
 def main():
   raw_cookie = get_secret('warehouse-302911','ZENDESK_COOKIE')
   cookies = dict({cookie.split("=")[0].strip():cookie.split("=")[1].replace("\"","") for cookie in raw_cookie.split(";") if cookie.split("=")[0].find(".") == -1 })
-  print(cookies)
 
   bucket_name = os.environ["BUCKET"]
   apis = ['users', 'groups', 'organizations', 'tickets']
