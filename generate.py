@@ -12,10 +12,12 @@ app = Flask(__name__)
 client = secretmanager.SecretManagerServiceClient()
 
 
-def get_secret(project_id, secret_id, version_id=7):
-    name = f"projects/{project_id}/secrets/{secret_id}/versions/{version_id}"
-    response = client.access_secret_version(request={"name": name})
-    return str(response.payload.data.decode("UTF-8"))
+def get_secret(project_id, secret_id, version_id=8):
+  parent = client.secret_path(project_id, secret_id)
+  versions = [version.name for version in client.list_secret_versions(request={"parent": parent})]
+  latest_version = versions[0]
+  response = client.access_secret_version(request={"name": latest_version})
+  return str(response.payload.data.decode("UTF-8"))
 
 def fetch(api, cookies, page_num=1):
   return get(f'https://doitintl.zendesk.com/api/v2/{api}.json?page={page_num}', cookies, page_num)
@@ -32,7 +34,7 @@ def get(uri, cookies, page_num):
       exit()
   return response.json()
 
-def iterate_through_pages(current_api, cookies, current_api_data, counter=1): 
+def iterate_through_pages(current_api, cookies, current_api_data, counter=1):
   current_page = fetch(current_api, cookies, counter)
   current_api_data.extend(current_page[current_api])
   if current_page.get('next_page', None) != None:
