@@ -7,8 +7,8 @@ on:
     - "*"
   pull_request:
 jobs:
-  test:
-    name: test
+  build:
+    name: build
     runs-on: ubuntu-latest
     steps:
     - name: Checkout code
@@ -17,3 +17,18 @@ jobs:
         fetch-depth: 1
     - name: Build
       run: docker build .
+  testandlint:
+    name: testandlint
+    runs-on: ubuntu-latest
+    container: python:3.8-slim-buster
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v1
+      with:
+        fetch-depth: 1
+    - name: Build
+      run: |
+        pip -q install poetry
+        poetry install
+        poetry run black --check .
+        poetry run mypy --ignore-missing-imports .
