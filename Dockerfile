@@ -1,13 +1,3 @@
-FROM python:3.8-slim-buster as builder
-
-WORKDIR /app
-
-COPY poetry.lock pyproject.toml /app/
-
-RUN pip -q install poetry
-
-RUN poetry export -f requirements.txt --without-hashes --output requirements.txt
-
 FROM python:3.8-slim-buster
 
 ENV PYTHONUNBUFFERED=1 \
@@ -16,12 +6,16 @@ ENV PYTHONUNBUFFERED=1 \
     PIP_DISABLE_PIP_VERSION_CHECK=on \
     PIP_DEFAULT_TIMEOUT=100
 
+RUN apt-get update && apt-get -yqq install gcc
+
 WORKDIR /app
 
-COPY --from=builder /app/requirements.txt .
+COPY pdm.lock pyproject.toml /app/
 
-RUN pip -q install -r requirements.txt
+RUN pip -q install pdm
+
+RUN pdm install
 
 COPY generate.py .
 
-CMD exec gunicorn --bind :$PORT --workers 1 --threads 1 --timeout 0 generate:app
+CMD pdm run gunicorn --bind :$PORT --workers 1 --threads 1 --timeout 0 generate:app

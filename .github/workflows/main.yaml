@@ -28,7 +28,8 @@ jobs:
         fetch-depth: 1
     - name: Build
       run: |
-        pip -q install poetry
-        poetry install
-        poetry run black --check .
-        poetry run mypy --ignore-missing-imports .
+        apt-get update && apt-get -yqq install gcc
+        pip -q install pdm
+        pdm install
+        pdm run black --check .
+        pdm run mypy --ignore-missing-imports .
