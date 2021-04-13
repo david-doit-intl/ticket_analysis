@@ -1,4 +1,4 @@
-FROM python:3.8-slim-buster as builder
+FROM python:3.9-slim-buster as builder
 
 WORKDIR /app
 
@@ -8,7 +8,7 @@ RUN pip -q install poetry
 
 RUN poetry export -f requirements.txt --without-hashes --output requirements.txt
 
-FROM python:3.8-slim-buster
+FROM python:3.9-slim-buster
 
 ENV PYTHONUNBUFFERED=1 \
     PYTHONDONTWRITEBYTECODE=1 \
