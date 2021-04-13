@@ -20,7 +20,7 @@ jobs:
   testandlint:
     name: testandlint
     runs-on: ubuntu-latest
-    container: python:3.8-slim-buster
+    container: python:3.9-slim-buster
     steps:
     - name: Checkout code
       uses: actions/checkout@v1

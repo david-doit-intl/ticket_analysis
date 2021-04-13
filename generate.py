@@ -14,13 +14,8 @@ client = secretmanager.SecretManagerServiceClient()
 
 
 def get_secret(project_id: str, secret_id: str) -> str:
-    parent = client.secret_path(project_id, secret_id)
-    versions = [
-        version.name
-        for version in client.list_secret_versions(request={"parent": parent})
-    ]
-    latest_version = versions[0]
-    response = client.access_secret_version(request={"name": latest_version})
+    name = f"projects/{project_id}/secrets/{secret_id}/versions/latest"
+    response = client.access_secret_version(request={"name": name})
     return str(response.payload.data.decode("UTF-8"))
 
 
